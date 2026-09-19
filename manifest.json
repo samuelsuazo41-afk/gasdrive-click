@@ -1,1 +1,25 @@
 
+{
+  "name": "GasDrive Click - SBG Master V14+",
+  "short_name": "GasDrive Click",
+  "description": "Panel inteligente S-01 S-02 AGENTES + PELIGRO V14+ - 12 pictogramas mixtos - Educativo DGT",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#020611",
+  "theme_color": "#00e5ff",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
