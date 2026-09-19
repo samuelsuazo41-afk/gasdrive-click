@@ -1,1 +1,102 @@
-
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GasDrive Click - SBG Master V14+</title>
+<style>
+:root{--cyan:#00e5ff;--bg:#020611;--card:#0a142e;--green:#00c853;--red:#d50000;--yellow:#ffca00;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:white;font-family:Inter,system-ui,Arial;display:flex;justify-content:center;}
+.phone{width:100%;max-width:430px;min-height:100vh;border-left:2px solid var(--cyan);border-right:2px solid var(--cyan);background:#070e24;box-shadow:0 0 30px #00e5ff44;}
+header{position:sticky;top:0;z-index:10;background:#020611;padding:14px;border-bottom:2px solid var(--cyan);}
+h1{color:var(--cyan);text-align:center;margin:0;font-size:22px;}
+.pill{background:#0050ff;color:white;text-align:center;padding:10px;border-radius:30px;font-weight:800;font-size:11px;margin-top:10px;}
+.menu{display:flex;gap:6px;overflow-x:auto;padding:12px 10px;white-space:nowrap;}
+.menu button{background:#0a142e;border:1px solid var(--cyan);color:var(--cyan);padding:7px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;flex-shrink:0;}
+.menu button.active{background:var(--cyan);color:#000;}
+.grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:12px;}
+.card{background:var(--card);border:1px solid #1e3a6b;border-radius:14px;padding:8px 4px;text-align:center;cursor:pointer;min-height:110px;}
+.card:hover{border-color:var(--cyan);box-shadow:0 0 10px #00e5ff66;transform:translateY(-2px);}
+.card.svgbox{width:62px;height:62px;margin:0 auto;display:flex;align-items:center;justify-content:center;background:#fff;border-radius:8px;overflow:hidden;}
+.card.code{color:var(--cyan);font-weight:900;font-size:13px;margin-top:6px;display:block;}
+.card.name{color:#aab7d8;font-size:9px;margin-top:2px;height:24px;overflow:hidden;display:block;}
+.card.tipo-peligro{border-left:3px solid #ffab00;}
+.card.tipo-reglamentacion{border-left:3px solid var(--red);}
+.card.tipo-indicacion{border-left:3px solid #2962ff;}
+.card.tipo-mecanica{border-left:3px solid #8d6e63;}
+.card.tipo-auxilios{border-left:3px solid var(--green);}
+.card.tipo-pesado{border-left:3px solid #ff6d00;}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.88);display:none;z-index:100;padding:16px;align-items:center;justify-content:center;}
+#modal.show{display:flex;}
+.modal-box{background:#0e1a3a;border:2px solid var(--cyan);border-radius:20px;padding:16px;width:100%;max-width:360px;max-height:90vh;overflow-y:auto;}
+.modal-box.svgbox-big{background:white;border-radius:12px;padding:10px;margin-bottom:12px;display:flex;justify-content:center;}
+.modal-box.svgbox-big svg{width:140px;height:140px;}
+.bar{margin-top:8px;border-radius:10px;padding:10px;display:flex;gap:8px;font-weight:700;font-size:12px;}
+.bar.green{background:var(--green);color:white;}
+.bar.red{background:var(--red);color:white;}
+.bar.yellow{background:var(--yellow);color:#111;}
+.quiz{margin-top:12px;background:#070e24;border:1px dashed var(--cyan);border-radius:12px;padding:10px;font-size:12px;}
+.btn{width:100%;margin-top:12px;background:var(--cyan);color:#000;border:none;padding:12px;border-radius:12px;font-weight:900;cursor:pointer;}
+.footer{color:#4a5a8a;text-align:center;font-size:10px;padding:14px;}
+</style>
+</head>
+<body>
+<div class="phone">
+<header>
+<h1>Panel inteligente</h1>
+<div class="pill" id="pill">S-01 • S-02 AGENTES + PELIGRO • 12 PICTOGRAMAS • V14+ MIXTO</div>
+</header>
+<div class="menu">
+<button class="active" onclick="filterTipo('todos',this)">TODOS</button>
+<button onclick="filterTipo('peligro',this)">PELIGRO</button>
+<button onclick="filterTipo('reglamentacion',this)">REGLA</button>
+<button onclick="filterTipo('indicacion',this)">INFO AZUL</button>
+<button onclick="filterTipo('mecanica',this)">MEC</button>
+<button onclick="filterTipo('moto',this)">MOTO</button>
+<button onclick="filterTipo('auxilios',this)">AUX</button>
+<button onclick="filterTipo('pesado',this)">PESADO</button>
+<button onclick="filterTipo('medioambiente',this)">AMB</button>
+</div>
+<div class="grid" id="grid">Cargando sbg_master.json...</div>
+<div class="footer">GasDrive Click • sbg_master.json madre • V14+ • Panel clicable</div>
+</div>
+<div id="modal" onclick="if(event.target==this)closeModal()"><div class="modal-box" id="modalBox"></div></div>
+<script>
+let DATA={}; let currentFilter='todos';
+async function load(){
+ try{
+  const res = await fetch('./sbg_master.json?v='+Date.now());
+  DATA = await res.json();
+  render();
+ }catch(e){
+  document.getElementById('grid').innerHTML='⚠️ No encuentra sbg_master.json - ponlo en misma carpeta que index.html';
+ }
+}
+function render(){
+ const grid=document.getElementById('grid'); grid.innerHTML='';
+ const keys=Object.keys(DATA).filter(k=>DATA[k] && DATA[k].picto_svg);
+ let filtered=keys.filter(k=> currentFilter=='todos'? true : (DATA[k].tipo||'').toLowerCase().includes(currentFilter));
+ filtered=filtered.slice(0,12);
+ document.getElementById('pill').innerText='S-01 • '+currentFilter.toUpperCase()+' • '+filtered.length+' PICTOGRAMAS • V14+ MIXTO';
+ filtered.forEach(id=>{
+   const item=DATA[id];
+   const card=document.createElement('div');
+   card.className='card tipo-'+(item.tipo||'indicacion');
+   card.onclick=()=>openModal(id);
+   card.innerHTML=`<div class="svgbox">${item.picto_svg}</div><span class="code">${id}</span><span class="name">${item.nombre||id}</span>`;
+   grid.appendChild(card);
+ });
+}
+function filterTipo(t,btn){ currentFilter=t; document.querySelectorAll('.menu button').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); render(); }
+function openModal(id){
+ const it=DATA[id];
+ const box=document.getElementById('modalBox');
+ box.innerHTML=`<div class="svgbox-big">${it.picto_svg}</div><div style="color:#00e5ff;font-weight:900;text-align:center;">${id} • ${it.nombre||''}</div><div class="bar green">✅ ${it.capas?.ok||''}</div><div class="bar red">❌ ${it.capas?.bad||''}</div><div class="bar yellow">🎯 EXAMEN: ${it.capas?.exam||''}</div><div class="quiz"><b>Quiz ${it.quiz?.nivel||'EDU'}:</b> ${it.quiz?.pregunta||''}<br><br>✔️ OK: ${it.quiz?.respuesta_ok||''}<br>❌ TRAMPA: ${it.quiz?.respuesta_bad||''}<br><br><small>🎰 Casino: ${it.quiz?.modo_casino_dgt||''}</small><br><small>📝 Examen: ${it.quiz?.modo_examen||''}</small></div><button class="btn" onclick="closeModal()">Siguiente →</button>`;
+ document.getElementById('modal').classList.add('show');
+}
+function closeModal(){document.getElementById('modal').classList.remove('show');}
+load();
+</script>
+</body>
+</html>
