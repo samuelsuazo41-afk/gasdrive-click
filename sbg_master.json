@@ -1,1 +1,21 @@
-
+"S-28": {
+  "tipo": "indicacion", "color": "azul",
+  "nombre": "S-28 Calle residencial 20",
+  "panel": "INDICACION",
+  "picto_svg": "<svg viewBox='0 0 100 100'>...S-28 casitas vectorial 2.8KB...</svg>",
+  "capas": {
+    "ok": "20 max prioridad peatón pueden jugar",
+    "bad": "No pites no corras 1ª marcha",
+    "exam": "S-28 TRAMPA 70% suspenden"
+  },
+  "quiz": {
+    "pregunta": "¿Puedes aparcar en S-28?",
+    "respuesta_ok": "Solo donde indiquen peatón manda",
+    "respuesta_bad": "Si donde quieras",
+    "nivel": "TRAMPA",
+    "modo_casino_dgt": "Modo difícil DGT: ¿Puedes aparcar en S-28? con 4 opciones trampa",
+    "modo_examen": "Modo examen oficial: ¿Puedes aparcar en S-28? - Correcta: Solo donde indiquen"
+  },
+  "format": "S-01 S-02 V14+ 12 pictogramas",
+  "peso_kb": 2.8
+}
